@@ -12,4 +12,5 @@ public class LoginResponseDTO {
     private String role;
     String message;
     boolean success;
+    private String token;
 }
