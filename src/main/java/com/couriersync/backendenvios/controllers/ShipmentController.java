@@ -53,4 +53,24 @@ public class ShipmentController {
         List<ShipmentResponseDTO> shipments = shipmentService.getAllShipments();
         return ResponseEntity.ok(shipments);
     }
+
+    @PutMapping("/status/transit/{id}")
+    public ResponseEntity<String> updateStatusToInTransit(@PathVariable("id") Integer shipmentId) {
+        try {
+            shipmentService.updateShipmentStatusToInTransit(shipmentId);
+            return ResponseEntity.ok("Shipment status updated to 'En transito'");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/status/delivered/{id}")
+    public ResponseEntity<String> updateShipmentToDelivered(@PathVariable("id") Integer shipmentId) {
+        try {
+            shipmentService.updateShipmentStatusToDelivered(shipmentId);
+            return ResponseEntity.ok("Shipment status updated to 'Entregado''");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

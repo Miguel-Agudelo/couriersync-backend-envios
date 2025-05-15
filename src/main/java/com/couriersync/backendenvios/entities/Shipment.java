@@ -54,4 +54,7 @@ public class Shipment {
     @JoinColumn(name = "created_by", referencedColumnName = "id_user", nullable = false)
     private User createdBy;
 
+    @Column(name = "status_update_date")
+    private Date statusUpdateDate;
+
 }

@@ -20,6 +20,7 @@ public class ShipmentMapper {
         shipment.setStatus(defaultStatus);
         shipment.setShippingDate(dto.getShippingDate());
         shipment.setDeliveryDate(dto.getDeliveryDate());
+        shipment.setStatusUpdateDate(new Date());
         return shipment;
     }
 

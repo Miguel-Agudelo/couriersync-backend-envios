@@ -11,4 +11,6 @@ public interface ShipmentService {
     void updateShipment(Integer shipmentId, ShipmentRequestDTO dto);
     ShipmentResponseDTO getShipmentById(Integer id);
     List<ShipmentResponseDTO> getAllShipments();
+    void updateShipmentStatusToInTransit(Integer shipmentId);
+    void updateShipmentStatusToDelivered(Integer shipmentId);
 }

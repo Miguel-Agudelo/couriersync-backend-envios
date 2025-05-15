@@ -110,4 +110,58 @@ public class ShipmentServiceImpl implements ShipmentService{
                 .map(ShipmentMapper::FromEntityToDto)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public void updateShipmentStatusToInTransit(Integer shipmentId) {
+        Shipment shipment = shipmentRepository.findById(shipmentId)
+                .orElseThrow(() -> new RuntimeException("Shipment not found"));
+
+        String currentStatus = shipment.getStatus() != null ? shipment.getStatus().getName() : "";
+
+        if (currentStatus.equalsIgnoreCase("Entregado")) {
+            throw new RuntimeException("The status cannot be changed because the shipment has already been delivered.");
+        }
+
+        if (!currentStatus.equalsIgnoreCase("Pendiente")) {
+            throw new RuntimeException("The current status does not allow changing to 'En transito'.");
+        }
+
+        ShippingStatus inTransitStatus = shippingStatusRepository.findByName("En transito")
+                .orElseThrow(() -> new RuntimeException("'En transito' status not found"));
+
+        shipment.setStatus(inTransitStatus);
+        shipment.setStatusUpdateDate(new Date()); // Fecha y hora del cambio de estado
+
+        shipmentRepository.save(shipment);
+    }
+
+
+    @Override
+    public void updateShipmentStatusToDelivered(Integer shipmentId) {
+        Shipment shipment = shipmentRepository.findById(shipmentId)
+                .orElseThrow(() -> new RuntimeException("Shipment not found"));
+
+        String currentStatus = shipment.getStatus() != null ? shipment.getStatus().getName() : "";
+
+        if (currentStatus.equalsIgnoreCase("Entregado")) {
+            throw new RuntimeException("The shipment has already been delivered.");
+        }
+
+        if (!currentStatus.equalsIgnoreCase("En transito")) {
+            throw new RuntimeException("Only shipments in transit can be marked as delivered.");
+        }
+
+        ShippingStatus deliveredStatus = shippingStatusRepository.findByName("Entregado")
+                .orElseThrow(() -> new RuntimeException("'Entregado' status not found"));
+
+        shipment.setStatus(deliveredStatus);
+        shipment.setStatusUpdateDate(new Date()); // Fecha y hora de entrega
+
+        shipmentRepository.save(shipment);
+    }
+
+
+
+
+
 }
