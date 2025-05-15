@@ -5,9 +5,7 @@ import com.couriersync.backendenvios.entities.User;
 
 public class AuthMapper {
 
-    public static LoginResponseDTO fromUserToLoginResponse(
-            User user,
-            String token) {
+    public static LoginResponseDTO fromUserToLoginResponse(User user, String token) {
         return new LoginResponseDTO(
                 user.getId(),
                 user.getName(),

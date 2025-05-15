@@ -1,5 +1,7 @@
 package com.couriersync.backendenvios.dtos;
 
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
@@ -20,6 +22,8 @@ public class ShipmentRequestDTO {
     private Integer priorityId;
     @NotNull
     private Integer clientId;
+    @FutureOrPresent(message = "Shipping date cannot be in the past")
     private Date shippingDate;
+    @Future(message = "Delivery date must be in the future")
     private Date deliveryDate;
 }
