@@ -1,0 +1,1 @@
+web: java -jar target/couriersync-backend-envios-0.0.1-SNAPSHOT.jar
