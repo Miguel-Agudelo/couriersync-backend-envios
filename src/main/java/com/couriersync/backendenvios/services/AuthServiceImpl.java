@@ -8,6 +8,7 @@ import com.couriersync.backendenvios.repositories.UserRepository;
 import com.couriersync.backendenvios.utils.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 
@@ -19,7 +20,8 @@ public class AuthServiceImpl implements AuthService {
     private UserRepository userRepository;
     @Autowired
     private JwtUtil jwtUtil;
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public LoginResponseDTO authenticate(LoginRequestDTO request) {
@@ -33,16 +35,17 @@ public class AuthServiceImpl implements AuthService {
         }
 
         User user = userOpt.get();
-        /*
-         // Verifica si la contraseña ingresada coincide con la contraseña encriptada del usuario.
+
+        // Compara la contraseña ingresada con la contraseña encriptada almacenada
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             return new LoginResponseDTO(null, null, null, null, "Invalid credentials", false, null);
         }
-        */
+/*
         // Compara la contraseña proporcionada con la almacenada (sin encriptación en este código)
         if (!request.getPassword().equals(user.getPassword())) {
             return new LoginResponseDTO( null,null, null, null, "Invalid credentials", false,null);
         }
+*/
 
         String token = jwtUtil.createToken(user);
 

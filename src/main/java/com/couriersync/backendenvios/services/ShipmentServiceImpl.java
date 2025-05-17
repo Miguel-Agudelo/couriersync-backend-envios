@@ -96,7 +96,7 @@ public class ShipmentServiceImpl implements ShipmentService{
     public ShipmentResponseDTO getShipmentById(Integer id) {
         Shipment shipment = shipmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Shipment not found"));
-        if (shipment.getStatus() != null && "Entregado".equalsIgnoreCase(shipment.getStatus().getName())) {
+        if (shipment.getStatus() != null && "entregado".equalsIgnoreCase(shipment.getStatus().getName())) {
             throw new RuntimeException("El envío ya fue entregado y no se puede editar");
         }
 
@@ -118,15 +118,15 @@ public class ShipmentServiceImpl implements ShipmentService{
 
         String currentStatus = shipment.getStatus() != null ? shipment.getStatus().getName() : "";
 
-        if (currentStatus.equalsIgnoreCase("Entregado")) {
+        if (currentStatus.equalsIgnoreCase("entregado")) {
             throw new RuntimeException("The status cannot be changed because the shipment has already been delivered.");
         }
 
-        if (!currentStatus.equalsIgnoreCase("Pendiente")) {
+        if (!currentStatus.equalsIgnoreCase("pendiente")) {
             throw new RuntimeException("The current status does not allow changing to 'En transito'.");
         }
 
-        ShippingStatus inTransitStatus = shippingStatusRepository.findByName("En transito")
+        ShippingStatus inTransitStatus = shippingStatusRepository.findByName("en transito")
                 .orElseThrow(() -> new RuntimeException("'En transito' status not found"));
 
         shipment.setStatus(inTransitStatus);
@@ -143,15 +143,15 @@ public class ShipmentServiceImpl implements ShipmentService{
 
         String currentStatus = shipment.getStatus() != null ? shipment.getStatus().getName() : "";
 
-        if (currentStatus.equalsIgnoreCase("Entregado")) {
+        if (currentStatus.equalsIgnoreCase("entregado")) {
             throw new RuntimeException("The shipment has already been delivered.");
         }
 
-        if (!currentStatus.equalsIgnoreCase("En transito")) {
+        if (!currentStatus.equalsIgnoreCase("en transito")) {
             throw new RuntimeException("Only shipments in transit can be marked as delivered.");
         }
 
-        ShippingStatus deliveredStatus = shippingStatusRepository.findByName("Entregado")
+        ShippingStatus deliveredStatus = shippingStatusRepository.findByName("entregado")
                 .orElseThrow(() -> new RuntimeException("'Entregado' status not found"));
 
         shipment.setStatus(deliveredStatus);
