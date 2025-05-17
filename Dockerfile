@@ -1,14 +1,12 @@
-# Imagen base de Java 17
-FROM eclipse-temurin:17-jdk
-
-# Directorio de trabajo dentro del contenedor
+# Etapa 1: compilar el proyecto
+FROM maven:3.8.5-eclipse-temurin-17 AS build
 WORKDIR /app
+COPY . .
+RUN mvn clean package -DskipTests
 
-# Copiar el archivo jar generado (ajusta el nombre si es distinto)
-COPY target/couriersync-backend-envios-0.0.1-SNAPSHOT.jar app.jar
-
-# Expone el puerto que usará la app
+# Etapa 2: correr el .jar generado
+FROM eclipse-temurin:17-jdk
+WORKDIR /app
+COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-
-# Comando para ejecutar la app
 ENTRYPOINT ["java", "-jar", "app.jar"]
