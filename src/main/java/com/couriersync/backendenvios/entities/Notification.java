@@ -11,7 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "shimpment")
+@Table(name = "notification")
 public class Notification {
 
     @Id
