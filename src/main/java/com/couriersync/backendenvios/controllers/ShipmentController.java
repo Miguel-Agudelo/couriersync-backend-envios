@@ -3,6 +3,7 @@ package com.couriersync.backendenvios.controllers;
 import com.couriersync.backendenvios.dtos.ShipmentRequestDTO;
 import com.couriersync.backendenvios.dtos.ShipmentResponseDTO;
 import com.couriersync.backendenvios.services.ShipmentService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ public class ShipmentController {
     @Autowired
     private ShipmentService shipmentService;
 
+    @SecurityRequirement(name = "Authorization")
     @PostMapping("/create")
     public ResponseEntity<ShipmentRequestDTO> createShipment(@Valid @RequestBody ShipmentRequestDTO request,
                                                               Authentication authentication) {
@@ -28,6 +30,7 @@ public class ShipmentController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @SecurityRequirement(name = "Authorization")
     @PutMapping("/edit/{id}")
     public ResponseEntity<String> updateShipment(@PathVariable("id") Integer shipmentId, @RequestBody @Valid ShipmentRequestDTO dto) {
         try {
@@ -38,6 +41,7 @@ public class ShipmentController {
         }
     }
 
+    @SecurityRequirement(name = "Authorization")
     @GetMapping("/listOne/{id}")
     public ResponseEntity<ShipmentResponseDTO> getShipmentById(@PathVariable Integer id) {
         try {
@@ -48,12 +52,14 @@ public class ShipmentController {
         }
     }
 
+    @SecurityRequirement(name = "Authorization")
     @GetMapping("/list")
     public ResponseEntity<List<ShipmentResponseDTO>> getAllShipments() {
         List<ShipmentResponseDTO> shipments = shipmentService.getAllShipments();
         return ResponseEntity.ok(shipments);
     }
 
+    @SecurityRequirement(name = "Authorization")
     @PutMapping("/status/transit/{id}")
     public ResponseEntity<String> updateStatusToInTransit(@PathVariable("id") Integer shipmentId) {
         try {
@@ -64,6 +70,7 @@ public class ShipmentController {
         }
     }
 
+    @SecurityRequirement(name = "Authorization")
     @PutMapping("/status/delivered/{id}")
     public ResponseEntity<String> updateShipmentToDelivered(@PathVariable("id") Integer shipmentId) {
         try {
