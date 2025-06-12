@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -23,6 +24,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     private final JwtTokenFilter jwtTokenFilter;
@@ -36,17 +38,13 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(withDefaults()) // Habilita CORS usando el bean de arriba
+                .cors(withDefaults())
                 .csrf().disable()
                 .authorizeHttpRequests(auth -> auth
-                        // Swagger docs públicos
-                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**"
-                        ).permitAll()
-                        // Endpoint de login sin token
+                        .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
-                        // Endpoint protegidos por rol
-                        .requestMatchers("/api/shipments/**").hasAnyAuthority("ROLE_OPERADOR", "ROLE_CONDUCTOR")
-                        // Todo lo demás requiere autenticación
+                        .requestMatchers("/api/shipments/summary").hasAuthority("ROLE_ADMINISTRADOR")
+                        .requestMatchers("/api/shipments/**").hasAnyAuthority("ROLE_OPERADOR", "ROLE_CONDUCTOR", "ROLE_ADMINISTRADOR")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling()

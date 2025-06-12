@@ -15,8 +15,8 @@ import java.util.Date;
 @Component
 public class JwtUtil {
     private static final String SECRET_KEY_STRING = "clave_super_secreta_muy_larga_que_uses_tu_yo_recomiendo_32_chars_min";
-    private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(SECRET_KEY_STRING.getBytes()); // genera una clave segura
-    private final long validityInMilliseconds = 1800000; // 30 minutos
+    private static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(SECRET_KEY_STRING.getBytes());
+    private final long validityInMilliseconds = 1800000; 
 
     public String createToken(User user) {
         return Jwts.builder()

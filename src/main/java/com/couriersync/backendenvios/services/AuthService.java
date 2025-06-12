@@ -5,4 +5,5 @@ import com.couriersync.backendenvios.dtos.LoginResponseDTO;
 
 public interface AuthService {
     LoginResponseDTO authenticate(LoginRequestDTO request);
+    LoginResponseDTO refreshToken(String oldAccessToken);
 }

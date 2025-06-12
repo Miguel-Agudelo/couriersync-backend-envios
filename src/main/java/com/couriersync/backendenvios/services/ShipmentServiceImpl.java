@@ -2,6 +2,7 @@ package com.couriersync.backendenvios.services;
 
 import com.couriersync.backendenvios.dtos.ShipmentRequestDTO;
 import com.couriersync.backendenvios.dtos.ShipmentResponseDTO;
+import com.couriersync.backendenvios.dtos.ShipmentSummaryResponseDTO;
 import com.couriersync.backendenvios.entities.*;
 import com.couriersync.backendenvios.mappers.ShipmentMapper;
 import com.couriersync.backendenvios.repositories.*;
@@ -96,10 +97,6 @@ public class ShipmentServiceImpl implements ShipmentService{
     public ShipmentResponseDTO getShipmentById(Integer id) {
         Shipment shipment = shipmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Shipment not found"));
-        if (shipment.getStatus() != null && "entregado".equalsIgnoreCase(shipment.getStatus().getName())) {
-            throw new RuntimeException("El envío ya fue entregado y no se puede editar");
-        }
-
         return ShipmentMapper.FromEntityToDto(shipment);
     }
 
@@ -158,6 +155,16 @@ public class ShipmentServiceImpl implements ShipmentService{
         shipment.setStatusUpdateDate(new Date()); // Fecha y hora de entrega
 
         shipmentRepository.save(shipment);
+    }
+
+    @Override
+    public ShipmentSummaryResponseDTO getShipmentSummaryForAdmin() {
+        Long pending = shipmentRepository.countByStatus_Name("pendiente");
+        Long inTransit = shipmentRepository.countByStatus_Name("en transito");
+        Long delivered = shipmentRepository.countByStatus_Name("entregado");
+        Long delayed = shipmentRepository.countDelayedShipments();
+
+        return new ShipmentSummaryResponseDTO(pending, inTransit, delivered, delayed);
     }
 
 

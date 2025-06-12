@@ -2,12 +2,14 @@ package com.couriersync.backendenvios.controllers;
 
 import com.couriersync.backendenvios.dtos.ShipmentRequestDTO;
 import com.couriersync.backendenvios.dtos.ShipmentResponseDTO;
+import com.couriersync.backendenvios.dtos.ShipmentSummaryResponseDTO;
 import com.couriersync.backendenvios.services.ShipmentService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -79,5 +81,13 @@ public class ShipmentController {
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    @GetMapping("/summary")
+    @SecurityRequirement(name = "Authorization")
+    @PreAuthorize("hasAuthority('ROLE_ADMINISTRADOR')")
+    public ResponseEntity<ShipmentSummaryResponseDTO> getShipmentSummary() {
+        ShipmentSummaryResponseDTO summary = shipmentService.getShipmentSummaryForAdmin();
+        return ResponseEntity.ok(summary);
     }
 }
