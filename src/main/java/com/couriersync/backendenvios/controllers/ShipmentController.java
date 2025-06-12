@@ -1,6 +1,7 @@
 package com.couriersync.backendenvios.controllers;
 
-import com.couriersync.backendenvios.dtos.ShipmentRequestDTO;
+import com.couriersync.backendenvios.dtos.ShipmentCreationRequestDTO;
+import com.couriersync.backendenvios.dtos.ShipmentUpdateRequestDTO;
 import com.couriersync.backendenvios.dtos.ShipmentResponseDTO;
 import com.couriersync.backendenvios.dtos.ShipmentSummaryResponseDTO;
 import com.couriersync.backendenvios.services.ShipmentService;
@@ -23,9 +24,10 @@ public class ShipmentController {
     private ShipmentService shipmentService;
 
     @SecurityRequirement(name = "Authorization")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR', 'ROLE_OPERADOR')")
     @PostMapping("/create")
-    public ResponseEntity<ShipmentRequestDTO> createShipment(@Valid @RequestBody ShipmentRequestDTO request,
-                                                              Authentication authentication) {
+    public ResponseEntity<Void> createShipment(@Valid @RequestBody ShipmentCreationRequestDTO request,
+                                               Authentication authentication) {
         Integer userId = Integer.parseInt(authentication.getName());
         System.out.println("User id: " + userId);
         shipmentService.createShipment(request, userId);
@@ -33,8 +35,9 @@ public class ShipmentController {
     }
 
     @SecurityRequirement(name = "Authorization")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR', 'ROLE_OPERADOR')")
     @PutMapping("/edit/{id}")
-    public ResponseEntity<String> updateShipment(@PathVariable("id") Integer shipmentId, @RequestBody @Valid ShipmentRequestDTO dto) {
+    public ResponseEntity<String> updateShipment(@PathVariable("id") Integer shipmentId, @RequestBody @Valid ShipmentUpdateRequestDTO dto) {
         try {
             shipmentService.updateShipment(shipmentId, dto);
             return ResponseEntity.ok("Shipment updated successfully");
@@ -44,6 +47,7 @@ public class ShipmentController {
     }
 
     @SecurityRequirement(name = "Authorization")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR', 'ROLE_OPERADOR', 'ROLE_CONDUCTOR')")
     @GetMapping("/listOne/{id}")
     public ResponseEntity<ShipmentResponseDTO> getShipmentById(@PathVariable Integer id) {
         try {
@@ -55,6 +59,7 @@ public class ShipmentController {
     }
 
     @SecurityRequirement(name = "Authorization")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR', 'ROLE_OPERADOR', 'ROLE_CONDUCTOR')")
     @GetMapping("/list")
     public ResponseEntity<List<ShipmentResponseDTO>> getAllShipments() {
         List<ShipmentResponseDTO> shipments = shipmentService.getAllShipments();
@@ -62,6 +67,7 @@ public class ShipmentController {
     }
 
     @SecurityRequirement(name = "Authorization")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR', 'ROLE_OPERADOR', 'ROLE_CONDUCTOR')")
     @PutMapping("/status/transit/{id}")
     public ResponseEntity<String> updateStatusToInTransit(@PathVariable("id") Integer shipmentId) {
         try {
@@ -73,6 +79,7 @@ public class ShipmentController {
     }
 
     @SecurityRequirement(name = "Authorization")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR', 'ROLE_OPERADOR', 'ROLE_CONDUCTOR')")
     @PutMapping("/status/delivered/{id}")
     public ResponseEntity<String> updateShipmentToDelivered(@PathVariable("id") Integer shipmentId) {
         try {

@@ -1,15 +1,15 @@
 package com.couriersync.backendenvios.services;
 
-import com.couriersync.backendenvios.dtos.ShipmentRequestDTO;
+import com.couriersync.backendenvios.dtos.ShipmentCreationRequestDTO; // Nueva importación
+import com.couriersync.backendenvios.dtos.ShipmentUpdateRequestDTO;
 import com.couriersync.backendenvios.dtos.ShipmentResponseDTO;
 import com.couriersync.backendenvios.dtos.ShipmentSummaryResponseDTO;
-import com.couriersync.backendenvios.entities.Shipment;
 
 import java.util.List;
 
 public interface ShipmentService {
-    void createShipment(ShipmentRequestDTO dto, Integer userId);
-    void updateShipment(Integer shipmentId, ShipmentRequestDTO dto);
+    void createShipment(ShipmentCreationRequestDTO dto, Integer userId); // Firma del método actualizada
+    void updateShipment(Integer shipmentId, ShipmentUpdateRequestDTO dto);
     ShipmentResponseDTO getShipmentById(Integer id);
     List<ShipmentResponseDTO> getAllShipments();
     void updateShipmentStatusToInTransit(Integer shipmentId);

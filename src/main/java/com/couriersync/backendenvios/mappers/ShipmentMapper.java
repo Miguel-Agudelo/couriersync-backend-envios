@@ -1,14 +1,20 @@
 package com.couriersync.backendenvios.mappers;
 
-import com.couriersync.backendenvios.dtos.ShipmentRequestDTO;
+import com.couriersync.backendenvios.dtos.ShipmentUpdateRequestDTO;
 import com.couriersync.backendenvios.dtos.ShipmentResponseDTO;
-import com.couriersync.backendenvios.entities.*;
+import com.couriersync.backendenvios.entities.Address;
+import com.couriersync.backendenvios.entities.Client;
+import com.couriersync.backendenvios.entities.Priority;
+import com.couriersync.backendenvios.entities.Shipment;
+import com.couriersync.backendenvios.entities.ShippingStatus;
+import com.couriersync.backendenvios.entities.User;
 
+import java.time.ZoneId;
 import java.util.Date;
 
 public class ShipmentMapper {
 
-    public static Shipment FromDtoToEntity(ShipmentRequestDTO dto, Address origin, Address destination, Client client, Priority priority, User creator, ShippingStatus defaultStatus) {
+    public static Shipment FromDtoToEntity(ShipmentUpdateRequestDTO dto, Address origin, Address destination, Client client, Priority priority, User creator, ShippingStatus defaultStatus) {
         Shipment shipment = new Shipment();
         shipment.setRegistrationDate(new Date());
         shipment.setWeight(dto.getWeight());
@@ -18,8 +24,8 @@ public class ShipmentMapper {
         shipment.setPriority(priority);
         shipment.setCreatedBy(creator);
         shipment.setStatus(defaultStatus);
-        shipment.setShippingDate(dto.getShippingDate());
-        shipment.setDeliveryDate(dto.getDeliveryDate());
+        shipment.setShippingDate(Date.from(dto.getShippingDate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        shipment.setDeliveryDate(Date.from(dto.getDeliveryDate().atStartOfDay(ZoneId.systemDefault()).toInstant()));
         shipment.setStatusUpdateDate(new Date());
         return shipment;
     }
@@ -27,8 +33,8 @@ public class ShipmentMapper {
     public static ShipmentResponseDTO FromEntityToDto(Shipment shipment) {
         ShipmentResponseDTO dto = new ShipmentResponseDTO();
         dto.setId(shipment.getId());
-        dto.setOrigin(shipment.getOriginAddress().toString());
-        dto.setDestination(shipment.getDestinationAddress().toString());
+        dto.setOrigin(shipment.getOriginAddress().getCity() + ", " + shipment.getOriginAddress().getAddress());
+        dto.setDestination(shipment.getDestinationAddress().getCity() + ", " + shipment.getDestinationAddress().getAddress());
         dto.setClient(shipment.getClient().getName());
         dto.setWeight(shipment.getWeight());
         dto.setPriority(shipment.getPriority().getName());
@@ -38,5 +44,4 @@ public class ShipmentMapper {
         dto.setStatus(shipment.getStatus().getName());
         return dto;
     }
-
 }
