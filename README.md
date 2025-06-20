@@ -30,4 +30,4 @@ En desarrollo 🚧
 
 [entregable1_couryer.pdf](https://github.com/user-attachments/files/20380094/entregable1_couryer.2.pdf) 
 
-[entregable2_couryer.pdf](https://github.com/user-attachments/files/20380094/entregable1_couryer.2.pdf](https://github.com/Miguel-Agudelo/couriersync-backend-envios/blob/main/Entregable%20Sprint%202%20CodeFactory%20Arquitectura%20de%20Software.pdf)) 
+[entregable2_couryer.pdf](https://github.com/Miguel-Agudelo/couriersync-backend-envios/blob/main/Entregable%20Sprint%202%20CodeFactory%20Arquitectura%20de%20Software.pdf)
