@@ -3,6 +3,8 @@ package com.couriersync.backendenvios.services;
 import com.couriersync.backendenvios.dtos.AddressRequestDTO;
 import com.couriersync.backendenvios.dtos.AddressResponseDTO;
 import com.couriersync.backendenvios.entities.Address;
+import com.couriersync.backendenvios.exceptions.GlobalExceptionHandler;
+import com.couriersync.backendenvios.mappers.AddressMapper;
 import com.couriersync.backendenvios.repositories.AddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,13 +24,18 @@ public class AddressServiceImpl implements AddressService {
         address.setCity(requestDTO.getCity());
         address.setAddress(requestDTO.getAddress());
         Address savedAddress = addressRepository.save(address);
-        return new AddressResponseDTO(savedAddress.getId(), savedAddress.getCity(), savedAddress.getAddress());
+        return AddressMapper.FromEntityToDto(savedAddress);
     }
 
     @Override
     public List<AddressResponseDTO> getAllAddresses() {
-        return addressRepository.findAll().stream()
-                .map(address -> new AddressResponseDTO(address.getId(), address.getCity(), address.getAddress()))
-                .collect(Collectors.toList());
+        return AddressMapper.FromEntityListToDtoList(addressRepository.findAll()); // <-- Usar nuevo método del mapper
+    }
+
+    @Override
+    public AddressResponseDTO getById(Integer id) {
+        Address address = addressRepository.findById(id)
+                .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("Address with ID " + id + " not found."));
+        return AddressMapper.FromEntityToDto(address);
     }
 }

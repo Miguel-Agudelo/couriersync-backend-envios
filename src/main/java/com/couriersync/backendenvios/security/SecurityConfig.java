@@ -45,16 +45,13 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/refresh-token").authenticated() // El refresh token debe estar autenticado
-
                         .requestMatchers("/api/shipments/summary").hasAuthority("ROLE_ADMINISTRADOR")
                         .requestMatchers("/api/shipments/**").hasAnyAuthority("ROLE_OPERADOR", "ROLE_CONDUCTOR", "ROLE_ADMINISTRADOR")
-
                         .requestMatchers(HttpMethod.POST, "/api/addresses/create").hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_OPERADOR")
                         .requestMatchers(HttpMethod.GET, "/api/addresses/list").hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_OPERADOR", "ROLE_CONDUCTOR")
-
                         .requestMatchers(HttpMethod.POST, "/api/clients/create").hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_OPERADOR")
                         .requestMatchers(HttpMethod.GET, "/api/clients/list").hasAnyAuthority("ROLE_ADMINISTRADOR", "ROLE_OPERADOR", "ROLE_CONDUCTOR")
-
+                        .requestMatchers("/actuator/prometheus").permitAll()
 
                         // Todo lo demás requiere solo autenticación
                         .anyRequest().authenticated()

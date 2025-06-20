@@ -2,10 +2,13 @@ package com.couriersync.backendenvios.dtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.core.Relation;
 
 @Data
 @AllArgsConstructor
-public class LoginResponseDTO {
+@Relation
+public class LoginResponseDTO extends RepresentationModel<LoginResponseDTO> {
     private Integer id;
     private String name;
     private String email;

@@ -8,4 +8,5 @@ import java.util.List;
 public interface ClientService {
     ClientResponseDTO createClient(ClientRequestDTO requestDTO);
     List<ClientResponseDTO> getAllClients();
+    ClientResponseDTO getById(Integer id);
 }

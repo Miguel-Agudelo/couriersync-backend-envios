@@ -39,4 +39,12 @@ public class ClientController {
         List<ClientResponseDTO> clients = clientService.getAllClients();
         return ResponseEntity.ok(clients);
     }
+
+    @SecurityRequirement(name = "Authorization")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR', 'ROLE_OPERADOR', 'ROLE_CONDUCTOR')") // O los roles que apliquen
+    @GetMapping("/{id}") // Nueva ruta
+    public ResponseEntity<ClientResponseDTO> getById(@PathVariable Integer id) {
+        ClientResponseDTO client = clientService.getById(id); // Necesitarás un método getById en ClientService
+        return ResponseEntity.ok(client);
+    }
 }

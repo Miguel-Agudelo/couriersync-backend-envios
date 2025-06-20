@@ -1,9 +1,6 @@
 package com.couriersync.backendenvios.dtos;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 
 public class AddressDataDTO {
     private Integer id;

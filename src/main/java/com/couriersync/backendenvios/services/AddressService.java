@@ -8,4 +8,5 @@ import java.util.List;
 public interface AddressService {
     AddressResponseDTO createAddress(AddressRequestDTO requestDTO);
     List<AddressResponseDTO> getAllAddresses();
+    AddressResponseDTO getById(Integer id);
 }

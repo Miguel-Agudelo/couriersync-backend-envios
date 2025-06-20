@@ -1,11 +1,14 @@
 package com.couriersync.backendenvios.dtos;
 
 import lombok.Data;
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.core.Relation;
 
 import java.util.Date;
 
 @Data
-public class ShipmentResponseDTO {
+@Relation(collectionRelation = "shipments")
+public class ShipmentResponseDTO extends RepresentationModel<ShipmentResponseDTO>{
     private Integer id;
     private String origin;
     private String destination;

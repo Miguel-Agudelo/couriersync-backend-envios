@@ -35,4 +35,12 @@ public class AddressController {
         List<AddressResponseDTO> addresses = addressService.getAllAddresses();
         return ResponseEntity.ok(addresses);
     }
+
+    @SecurityRequirement(name = "Authorization")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMINISTRADOR', 'ROLE_OPERADOR', 'ROLE_CONDUCTOR')") // O los roles que apliquen
+    @GetMapping("/{id}")
+    public ResponseEntity<AddressResponseDTO> getById(@PathVariable Integer id) {
+        AddressResponseDTO address = addressService.getById(id); // Necesitarás un método getById en AddressService
+        return ResponseEntity.ok(address);
+    }
 }

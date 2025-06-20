@@ -21,6 +21,7 @@ import com.couriersync.backendenvios.repositories.PriorityRepository;
 import com.couriersync.backendenvios.repositories.ShipmentRepository;
 import com.couriersync.backendenvios.repositories.ShippingStatusRepository;
 import com.couriersync.backendenvios.repositories.UserRepository;
+import com.couriersync.backendenvios.exceptions.GlobalExceptionHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,13 +61,13 @@ public class ShipmentServiceImpl implements ShipmentService {
             Client client = processClientData(dto.getClientInfo());
 
             Priority priority = priorityRepository.findByName(dto.getPriorityName().toUpperCase())
-                    .orElseThrow(() -> new RuntimeException("Priority '" + dto.getPriorityName() + "' not found. Valid options: ALTA, MEDIA, BAJA."));
+                    .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("Priority '" + dto.getPriorityName() + "' not found. Valid options: ALTA, MEDIA, BAJA."));
 
             ShippingStatus initialStatus = shippingStatusRepository.findByName("pendiente")
-                    .orElseThrow(() -> new RuntimeException("Initial status 'pendiente' not found in database. Please ensure it exists."));
+                    .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("Initial status 'pendiente' not found in database. Please ensure it exists."));
 
             User creator = userRepository.findById(userId)
-                    .orElseThrow(() -> new RuntimeException("User with ID " + userId + " not found."));
+                    .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("User with ID " + userId + " not found."));
 
             Shipment shipment = new Shipment();
             shipment.setRegistrationDate(new Date());
@@ -92,23 +93,24 @@ public class ShipmentServiceImpl implements ShipmentService {
     private Address processAddressData(AddressDataDTO addressData) {
         if (addressData.hasId()) {
             return addressRepository.findById(addressData.getId())
-                    .orElseThrow(() -> new RuntimeException("Address with ID " + addressData.getId() + " not found."));
+                    .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("Address with ID " + addressData.getId() + " not found."));
         } else if (addressData.hasNewAddressData()) {
             AddressResponseDTO newAddressDto = addressService.createAddress(addressData.getNewAddress());
             return addressRepository.findById(newAddressDto.getId())
-                    .orElseThrow(() -> new RuntimeException("Newly created address with ID " + newAddressDto.getId() + " not found after creation."));
+                    .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("Newly created address with ID " + newAddressDto.getId() + " not found after creation."));
         }
+
         throw new IllegalArgumentException("Address data is invalid: either ID or new address data must be provided.");
     }
 
     private Client processClientData(ClientDataDTO clientData) {
         if (clientData.hasId()) {
             return clientRepository.findById(clientData.getId())
-                    .orElseThrow(() -> new RuntimeException("Client with ID " + clientData.getId() + " not found."));
+                    .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("Client with ID " + clientData.getId() + " not found."));
         } else if (clientData.hasNewClientData()) {
             ClientResponseDTO newClientDto = clientService.createClient(clientData.getNewClient());
             return clientRepository.findById(newClientDto.getId())
-                    .orElseThrow(() -> new RuntimeException("Newly created client with ID " + newClientDto.getId() + " not found after creation."));
+                    .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("Newly created client with ID " + newClientDto.getId() + " not found after creation."));
         }
         throw new IllegalArgumentException("Client data is invalid: either ID or new client data must be provided.");
     }
@@ -116,23 +118,23 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Override
     public void updateShipment(Integer shipmentId, ShipmentUpdateRequestDTO dto) {
         Shipment shipment = shipmentRepository.findById(shipmentId)
-                .orElseThrow(() -> new RuntimeException("Shipment not found"));
+                .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("Shipment not found"));
 
         if (shipment.getStatus().getName().equalsIgnoreCase("Entregado")) {
-            throw new RuntimeException("Cannot edit shipment with finalized delivery status");
+            throw new GlobalExceptionHandler.BadRequestException("Cannot edit shipment with finalized delivery status");
         }
 
         Address origin = addressRepository.findById(dto.getOriginAddressId())
-                .orElseThrow(() -> new RuntimeException("Origin address not found"));
+                .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("Origin address not found"));
 
         Address destination = addressRepository.findById(dto.getDestinationAddressId())
-                .orElseThrow(() -> new RuntimeException("Destination address not found"));
+                .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("Destination address not found"));
 
         Client client = clientRepository.findById(dto.getClientId())
-                .orElseThrow(() -> new RuntimeException("Client not found"));
+                .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("Client not found"));
 
         Priority priority = priorityRepository.findById(dto.getPriorityId())
-                .orElseThrow(() -> new RuntimeException("Priority not found"));
+                .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("Priority not found"));
 
         shipment.setOriginAddress(origin);
         shipment.setDestinationAddress(destination);
@@ -148,7 +150,7 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Override
     public ShipmentResponseDTO getShipmentById(Integer id) {
         Shipment shipment = shipmentRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Shipment not found"));
+                .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("Shipment not found"));
         return ShipmentMapper.FromEntityToDto(shipment);
     }
 
@@ -163,20 +165,20 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Override
     public void updateShipmentStatusToInTransit(Integer shipmentId) {
         Shipment shipment = shipmentRepository.findById(shipmentId)
-                .orElseThrow(() -> new RuntimeException("Shipment not found"));
+                .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("Shipment not found"));
 
         String currentStatus = shipment.getStatus() != null ? shipment.getStatus().getName() : "";
 
         if (currentStatus.equalsIgnoreCase("entregado")) {
-            throw new RuntimeException("The status cannot be changed because the shipment has already been delivered.");
+            throw new GlobalExceptionHandler.BadRequestException("The status cannot be changed because the shipment has already been delivered.");
         }
 
         if (!currentStatus.equalsIgnoreCase("pendiente")) {
-            throw new RuntimeException("The current status does not allow changing to 'En transito'.");
+            throw new GlobalExceptionHandler.BadRequestException("The current status does not allow changing to 'En transito'.");
         }
 
         ShippingStatus inTransitStatus = shippingStatusRepository.findByName("en transito")
-                .orElseThrow(() -> new RuntimeException("'En transito' status not found in database. Please ensure it exists."));
+                .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("'En transito' status not found in database. Please ensure it exists."));
 
         shipment.setStatus(inTransitStatus);
         shipment.setStatusUpdateDate(new Date());
@@ -187,20 +189,20 @@ public class ShipmentServiceImpl implements ShipmentService {
     @Override
     public void updateShipmentStatusToDelivered(Integer shipmentId) {
         Shipment shipment = shipmentRepository.findById(shipmentId)
-                .orElseThrow(() -> new RuntimeException("Shipment not found"));
+                .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("Shipment not found"));
 
         String currentStatus = shipment.getStatus() != null ? shipment.getStatus().getName() : "";
 
         if (currentStatus.equalsIgnoreCase("entregado")) {
-            throw new RuntimeException("The shipment has already been delivered.");
+            throw new GlobalExceptionHandler.BadRequestException("The shipment has already been delivered.");
         }
 
         if (!currentStatus.equalsIgnoreCase("en transito")) {
-            throw new RuntimeException("Only shipments in transit can be marked as delivered.");
+            throw new GlobalExceptionHandler.BadRequestException("Only shipments in transit can be marked as delivered.");
         }
 
         ShippingStatus deliveredStatus = shippingStatusRepository.findByName("entregado")
-                .orElseThrow(() -> new RuntimeException("'Entregado' status not found in database. Please ensure it exists."));
+                .orElseThrow(() -> new GlobalExceptionHandler.ResourceNotFoundException("'Entregado' status not found in database. Please ensure it exists."));
 
         shipment.setStatus(deliveredStatus);
         shipment.setStatusUpdateDate(new Date());
